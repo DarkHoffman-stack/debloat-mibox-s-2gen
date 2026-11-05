@@ -1,0 +1,20 @@
+# Mi Box S 2nd gen (device: oneday, Android 12, global) - lista custom NERV
+# solo pm disable-user, todo reversible con tools/restore.sh
+com.xiaomi.statistic
+com.miui.tv.analytics
+com.xiaomi.tvqs.overseas
+com.xiaomo.tv.milegal
+com.xm.webcontent
+com.mitv.download.service
+com.mitv.tvhome.atv
+com.mitv.tvhome.michannel
+com.mitv.tvhome.mitvplus
+com.google.android.tvrecommendations
+com.google.android.feedback
+com.google.android.play.games
+com.google.android.videos
+com.google.android.youtube.tvmusic
+android.autoinstalls.config.xioami.mibox3
+com.mitv.milinkservice
+com.mitv.dream
+com.google.android.backdrop
