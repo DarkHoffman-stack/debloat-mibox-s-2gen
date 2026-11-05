@@ -1,54 +1,57 @@
-# Xiaomi Mi Box S (2nd gen)
+# Mi Box S (2nd gen) debloat
 
-Device under test: `oneday` (`ro.product.model = MIBOX4`), Android 12 / Google TV, global firmware.
+A fully reversible ADB debloat list, tested on a real device, with
+double-click runners for Windows and Linux/macOS.
 
-## ADB access (the "no Network debugging" mystery)
+Nothing here is truly uninstalled. Every entry is undone by
+[restore](#running) with one command per package.
 
-Developer options have no wireless/network debugging toggle, but none is needed:
+## Running
 
-1. Settings → Device Preferences → About → press OK on **Build** seven times.
-2. Developer options → **USB debugging** → ON.
-3. USB debugging *alone* makes the box listen on `tcp:5555` on the LAN.
-4. `adb connect <box-ip>:5555` and accept the fingerprint prompt on the TV.
+You need `adb` once:
 
-## debloat.txt
+| OS | Install adb |
+|---|---|
+| Windows | [platform-tools](https://developer.android.com/tools/releases/platform-tools) from Google, unzip, put `adb.exe` in PATH (or the folder you keep the files in) |
+| Linux | `sudo apt install android-tools-adb` (Debian/Ubuntu), `sudo dnf install android-tools` (Fedora), `brew install android-platform-tools` (macOS via brew tap homebrew/cask if needed) |
 
-18 packages, `pm disable-user --user 0`, one per shell call:
+Then:
 
-```
-com.xiaomi.statistic                      # usage statistics upload
-com.miui.tv.analytics                     # analytics SDK host
-com.xiaomi.tvqs.overseas                  # crash/perf quality uploads
-com.xiaomo.tv.milegal                     # legal screens
-com.xm.webcontent                         # promo web container / screensaver ads
-com.mitv.download.service                 # OTA push-downloads
-com.mitv.tvhome.atv                       # PatchWall home (unused)
-com.mitv.tvhome.michannel                 # Mi recommendation channels
-com.mitv.tvhome.mitvplus                  # Xiaomi TV+ FAST channels
-com.google.android.tvrecommendations      # the ad "recommended for you" rows
-com.google.android.feedback
-com.google.android.play.games
-com.google.android.videos
-com.google.android.youtube.tvmusic
-android.autoinstalls.config.xioami.mibox3 # partner auto-installer
-com.mitv.milinkservice                    # MiLink cast (Google Chromecast kept)
-com.mitv.dream                            # Mi screensaver
-com.google.android.backdrop               # Ambient/Backdrop
-```
+| OS | Debloat (apply) | Restore (undo everything) |
+|---|---|---|
+| Windows | double-click `debloat.bat` | double-click `restore.bat` |
+| Linux/macOS | `./debloat.sh` | `./restore.sh` |
 
-Kept by owner's choice: `com.google.android.katniss` (voice), `com.google.android.apps.mediashell`
-(Chromecast built-in), `com.xiaomi.mitv.updateservice` (firmware OTA), `mitv.service`,
-`com.mitv.videoplayer` (USB playback).
+Both ask for the target once (network `IP:PORT` or a USB serial), print
+one line per package, and never loop retries.
 
-## Undo
+## the "no Network debugging" toggle
 
-```bash
-DEVICE=<box-ip>:5555 tools/restore.sh debloat.txt
+Developer options on this box have no wireless/network debugging entry — and none
+is needed. With plain **USB debugging** on (About → Build × 7 → Developer options),
+the box listens on network ADB port 5555:
+
+```text
+adb connect <box-ip>:5555
 ```
 
-## Launcher
+accept the prompt on the TV screen, then run `debloat.bat` / `debloat.sh`.
+
+## the launcher
 
 The stock Google TV home was replaced with the
-[cleanyourtv launcher](https://github.com/Gathin23/cleanyourtv) built from source
-(allows 4-7 columns; the launch script rolls back automatically if Home does not
-land on it). A cleaned theme (Aurora) is applied via its `tools/theme.sh`.
+[cleanyourtv launcher](https://github.com/Gathin23/cleanyourtv) (built from source,
+4-7 columns, rollback guaranteed if Home does not land on it). The Aurora theme
+applies over it with that repo's `tools/theme.sh`.
+
+## Safety notes
+
+- disable and reversible user-0 removal only; snapshot nothing is un-installed for real
+- lists are per-device: using another device's list can break parts you need
+- read the list first; every line says what the package does
+- if an entry refuses with a security exception, that device's firmware blocks
+  the route — don't loop, read the stock-launcher home and ADB come back per its README
+
+> tested on `oneday` / `MIBOX4`, Android 12 global firmware.
+
+> See also: [debloat-xiaomi-14t](https://github.com/DarkHoffman-stack/debloat-xiaomi-14t) — same method for a HyperOS 3 phone.
